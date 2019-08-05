@@ -1,42 +1,87 @@
 import React from 'react';
-import { Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Collapse, } from 'reactstrap';
+import { Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, Collapse, DropdownToggle, DropdownMenu, DropdownItem, ButtonDropdown, } from 'reactstrap';
 import logo from '../../assets/logo-bw.png';
 import { Link } from 'react-router-dom';
+import { IState } from '../../reducers';
+import { connect } from 'react-redux';
+import User from '../../models/user.model';
 
-interface INavProps {
-
+interface IProps {
+  user?: User
 }
 
 interface INavState {
-  isOpen: boolean
+  isOpen: boolean,
+  dropdownIsOpen: boolean
 }
 
-export default class Example extends React.Component<INavProps, INavState> {
+export class NavComponent extends React.Component<IProps, INavState> {
   constructor(props: any) {
     super(props);
 
-    this.toggle = this.toggle.bind(this);
+    this.toggleNavButton = this.toggleNavButton.bind(this);
+    this.toggleNavDropdown = this.toggleNavDropdown.bind(this);
     this.state = {
-      isOpen: false
+      isOpen: false,
+      dropdownIsOpen: false
     };
   }
-  toggle() {
+  toggleNavButton() {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
+  toggleNavDropdown() {
+    this.setState({
+      dropdownIsOpen: !this.state.dropdownIsOpen
+    });
+  }
   render() {
+    const user = this.props.user;
+    console.log(!user)
     return (
-      <Navbar color="dark" dark text-light expand="sm">
-        <NavbarBrand><Link to="/"><img src={logo} width="auto" height="25px" /></Link></NavbarBrand>
-        <NavbarToggler onClick={this.toggle} className="mr-2" />
-        <Collapse isOpen={this.state.isOpen} navbar>
+      <Navbar className="shadow bg-dark p-0" color="dark" dark fixed="top" expand="sm">
+        <NavbarBrand className="col-sm-3 col-md-2 mr-0 text-center">
+          <Link to="/"><img src={logo} width="auto" height="25px" alt="Revature Logo" /></Link>
+          <NavbarToggler onClick={this.toggleNavButton} className="float-right" />
+        </NavbarBrand>
+        <Collapse className="px-3" isOpen={this.state.isOpen} navbar>
           <Nav className="ml-auto" navbar>
             <NavItem>
-              <Link to="/users">Users</Link>
-            </NavItem>
-            <NavItem>
-              <Link to="/reimbursements">Reimbursements</Link>
+              {(() => {
+                if (!user) {
+                  return <Link className="nav-link" to="/login">Login</Link>
+                } else {
+                  return (
+                    <>
+                      <ButtonDropdown isOpen={this.state.dropdownIsOpen} toggle={this.toggleNavDropdown}>
+                        <DropdownToggle id="dropdownMenuNavButton" className="nav-link" caret>
+                          {user.username}
+                        </DropdownToggle>
+                        <DropdownMenu className="bg-dark">
+                          <DropdownItem header>User Options</DropdownItem>
+                          <DropdownItem className="bg-dark"><Link className="nav-link p-0" to="/account">Account</Link></DropdownItem>
+                          {(() => {
+                            if (user.role!.roleId < 3) { // not null assertion operator
+                              return (
+                                <>
+                                  <DropdownItem divider></DropdownItem>
+                                  <DropdownItem header>Finance Options</DropdownItem>
+                                  <DropdownItem className="bg-dark"><Link className="nav-link p-0" to="/users">Users</Link></DropdownItem>
+                                  <DropdownItem className="bg-dark"><Link className="nav-link p-0" to="/reimbursements">Reimbursements</Link></DropdownItem>
+                                </>
+                              )
+                            }
+                          })()}
+                          <DropdownItem divider></DropdownItem>
+                          <DropdownItem className="bg-dark"><Link className="nav-link p-0" to="/logout">Log Out</Link></DropdownItem>
+                        </DropdownMenu>
+                      </ButtonDropdown>
+                    </>
+                  )
+                }
+              })()}
+
             </NavItem>
           </Nav>
         </Collapse>
@@ -44,3 +89,9 @@ export default class Example extends React.Component<INavProps, INavState> {
     );
   }
 }
+
+const mapStateToProps = (state: IState) => ({
+  user: state.auth.currentUser
+})
+
+export default connect(mapStateToProps)(NavComponent);
