@@ -23,7 +23,7 @@
 }
 
 body {
-    padding-top: 4rem;
+    
     background-color: #212529;
     color: #ffffff
 }
@@ -32,9 +32,26 @@ body {
 * Main Container
 ******************/
 
-#main-container {
-  height:100vh 
- } 
+#main-row {
+  padding-top: 3.2rem;
+  min-height:100vh 
+ }
+ 
+/******************
+* Color
+******************/
+
+ .bg-light {
+  background-color: rgba(255, 255, 255, .1) !important;
+}
+
+.border-light {
+  border-color: rgba(255, 255, 255, .15) !important;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, .5);
+}
 
 /******************
 * Login

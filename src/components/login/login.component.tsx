@@ -49,7 +49,7 @@ export class LoginComponent extends Component<ILoginProps, ILoginComponentState>
         const errorMessage = this.props.auth.errorMessage;
         return (
             <div>
-                <Container>
+                <Container className="mt-5 pt-5">
                     <Form className="form-signin" onSubmit={this.submit}>
                         <FormGroup className="mb-4">
                             <img src={logo} />

@@ -14,7 +14,7 @@ export const login = (credentials: any, history: any) => async (dispatch: any) =
             user,
             token
         }
-
+        
         dispatch({
             type: authTypes.UPDATE_CURRENT_USER,
             payload: userToken
