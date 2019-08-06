@@ -1,15 +1,19 @@
 import React, { Component, MouseEvent } from 'react'
 import { connect } from 'react-redux'
-import { IState } from '../../reducers';
+import { IState, IReimbursementState } from '../../reducers';
 import Reimbursement from '../../models/reimbursement.model';
 import { Table } from 'reactstrap';
 
-interface ITableState {
+interface IReimbursementTableState {
     data: Reimbursement[],
     expandedRows: any[]
 }
 
-export class ReimbursementsTableComponent extends Component<{}, ITableState> {
+interface IReimbursementTableProps {
+    reimbursements: IReimbursementState
+}
+
+export class ReimbursementsTableComponent extends Component<IReimbursementTableProps, IReimbursementTableState> {
     constructor(props: any) {
         super(props);
 
@@ -147,23 +151,26 @@ export class ReimbursementsTableComponent extends Component<{}, ITableState> {
     }
 
     createRow = (rid: number) => {
-        const data = this.state.data;
-        const rowClickCallback = () => {this.rowClick(data[rid].reimbursementId)}; // Moved out of line due to needing to pass in event variables
+        const data = this.props.reimbursements.reimbursements;
+        if(!data) {
+            return;
+        }
+        const rowClickCallback = () => {this.rowClick(data![rid].reimbursementId)}; // Moved out of line due to needing to pass in event variables
         let row = [
             (
-                <tr onClick={rowClickCallback} key={`parentRow${data[rid].reimbursementId}`}>
-                    <td>{data[rid].reimbursementId}</td>
-                    <td>{data[rid].author.username}</td>
-                    <td>{data[rid].dateSubmitted}</td>
-                    <td>{data[rid].amount}</td>
-                    <td>{data[rid].type.type}</td>
+                <tr onClick={rowClickCallback} key={`parentRow${data![rid].reimbursementId}`}>
+                    <td>{data![rid].reimbursementId}</td>
+                    <td>{data![rid].author.username}</td>
+                    <td>{data![rid].dateSubmitted}</td>
+                    <td>{data![rid].amount}</td>
+                    <td>{data![rid].type.type}</td>
                 </tr>
             )];
-        if (this.state.expandedRows.includes(data[rid].reimbursementId)) {
+        if (this.state.expandedRows.includes(data![rid].reimbursementId)) {
             row.push(
-                <tr key={`childRow${data[rid].reimbursementId}`}>
-                    <td colSpan={2}>Status: {data[rid].status.status}</td>
-                    <td colSpan={3}>Description: <p>{data[rid].description}</p></td>
+                <tr key={`childRow${data![rid].reimbursementId}`}>
+                    <td colSpan={2}>Status: {data![rid].status.status}</td>
+                    <td colSpan={3}>Description: <p>{data![rid].description}</p></td>
                 </tr>
             )
         }
@@ -171,12 +178,18 @@ export class ReimbursementsTableComponent extends Component<{}, ITableState> {
         return row;
     }
 
-    render() {
+    createAllRows = () => {
         let allRows: any[] = [];
 
-        for (let i = 0; i < this.state.data.length; i++) {
+        for (let i = 0; i < this.state.data.length - 1; i++) {
             allRows.push(this.createRow(i));
         }
+
+        return allRows;
+    }
+
+    render() {
+        
 
         return (
             <Table className="text-light bg-light" size="sm" hover striped responsive>
@@ -190,7 +203,7 @@ export class ReimbursementsTableComponent extends Component<{}, ITableState> {
                     </tr>
                 </thead>
                 <tbody>
-                    {allRows}
+                    {this.createAllRows()}
                 </tbody>
             </Table>
         );
@@ -199,11 +212,12 @@ export class ReimbursementsTableComponent extends Component<{}, ITableState> {
 
 
 const mapStateToProps = (state: IState) => ({
-
+    reimbursements: state.reimbursements
 })
 
-const mapDispatchToProps = {
 
+const mapDispatchToProps = {
+    
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReimbursementsTableComponent)

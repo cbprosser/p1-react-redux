@@ -2,17 +2,23 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Col, Row, Container, Card, CardBody, CardHeader, ButtonGroup, Button, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, ButtonToolbar, Input } from 'reactstrap';
 import { IState } from '../../reducers';
-import { ReimbursementsTableComponent } from '../reimbursements-table/reimbursements.table.component';
+import ReimbursementsTableComponent from '../reimbursements-table/reimbursements.table.component';
+import { byId, byStatus } from '../../actions/reimbursements.actions';
 
 interface IReimbursementProps {
-    user: any
+    user: any,
+    reimbursements: any,
+    byId: (id: number, view: number, page: number) => any,
+    byStatus: (status: string, view: number, page: number) => any
 }
 
 interface IReimbursementState {
     dropdownSearchByIsOpen: boolean,
     searchBy?: string,
-    status?: string,
-    id?: number
+    status: string,
+    id: number,
+    page: number,
+    view: number
 }
 
 export class ReimbursementsComponent extends Component<IReimbursementProps, IReimbursementState> {
@@ -22,8 +28,18 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
         this.state = {
             dropdownSearchByIsOpen: false,
             status: 'Pending',
-            id: this.props.user && this.props.user.user.userId
+            id: this.props.user && this.props.user.user.userId,
+            page: 1,
+            view: 5
         }
+    }
+
+    getReimbursementsByStatus = async (status: string, view: number, page: number) => {
+        this.props.byStatus(status, view, page);
+    }
+
+    getReimbursementsByID = async (id: number, view: number, page: number) => {
+        this.props.byId(id, view, page);
     }
 
     toggleSearchByDropdown = () => {
@@ -63,6 +79,8 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
                                         {(() => {
                                             switch (this.state.searchBy) {
                                                 case 'Status':
+                                                    this.getReimbursementsByStatus(this.state.status, this.state.view, this.state.page)
+                                                    console.log(this.props.reimbursements)
                                                     return (
                                                         <>
                                                             <Button>Status</Button>
@@ -70,9 +88,10 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
                                                         </>
                                                     );
                                                 case 'User ID':
+                                                    this.getReimbursementsByID(this.state.id, this.state.view, this.state.page)
                                                     return (
                                                         <>
-                                                            <Input className="bg-dark text-light" type="number"/>
+                                                            <Input className="bg-dark text-light" type="number" />
                                                             <Button>View</Button>
                                                         </>
                                                     );
@@ -83,19 +102,19 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
                                     </ButtonGroup>
                                 </ButtonToolbar>
                                 {(() => {
-                                            switch (this.state.searchBy) {
-                                                case 'Status':
-                                                    return (
-                                                        <ReimbursementsTableComponent/>
-                                                    );
-                                                case 'User ID':
-                                                    return (
-                                                        <ReimbursementsTableComponent/>
-                                                    );
-                                                default:
-                                                    return;
-                                            }
-                                        })()}
+                                    switch (this.state.searchBy) {
+                                        case 'Status':
+                                            return (
+                                                <ReimbursementsTableComponent />
+                                            );
+                                        case 'User ID':
+                                            return (
+                                                <ReimbursementsTableComponent />
+                                            );
+                                        default:
+                                            return;
+                                    }
+                                })()}
                             </CardBody>
                         </Card>
                     </Col>
@@ -107,11 +126,13 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
 }
 
 const mapStateToProps = (state: IState) => ({
-    user: state.auth.currentUser
+    user: state.auth.currentUser,
+    reimbursements: state.reimbursements.reimbursements
 })
 
 const mapDispatchToProps = {
-
+    byId,
+    byStatus
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReimbursementsComponent)

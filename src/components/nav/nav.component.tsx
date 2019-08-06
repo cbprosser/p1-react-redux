@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 // FUTURE CHRIS: Change token to be stored in localStorage so you can keep user logged in.
 
-interface IProps {
+interface INavProps {
   user?: any
 }
 
@@ -16,7 +16,7 @@ interface INavState {
   dropdownIsOpen: boolean
 }
 
-export class NavComponent extends React.Component<IProps, INavState> {
+export class NavComponent extends React.Component<INavProps, INavState> {
   constructor(props: any) {
     super(props);
 
