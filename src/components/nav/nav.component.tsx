@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { IState, IAuthState } from '../../reducers';
 import { connect } from 'react-redux';
 
+// FUTURE CHRIS: Change token to be stored in localStorage so you can keep user logged in.
+
 interface IProps {
   user?: any
 }
@@ -18,26 +20,26 @@ export class NavComponent extends React.Component<IProps, INavState> {
   constructor(props: any) {
     super(props);
 
-    this.toggleNavButton = this.toggleNavButton.bind(this);
-    this.toggleNavDropdown = this.toggleNavDropdown.bind(this);
     this.state = {
       isOpen: false,
       dropdownIsOpen: false
     };
   }
-  toggleNavButton() {
+
+  toggleNavButton = () => {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
-  toggleNavDropdown() {
+
+  toggleNavDropdown = () => {
     this.setState({
       dropdownIsOpen: !this.state.dropdownIsOpen
     });
   }
+
   render() {
     const user = this.props.user && this.props.user.user;
-    console.log(user)
     return (
       <Navbar className="shadow bg-dark p-0" color="dark" dark fixed="top" expand="sm">
         <NavbarBrand className="col-sm-3 col-md-2 mr-0 text-center py-2">
