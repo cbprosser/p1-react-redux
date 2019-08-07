@@ -3,10 +3,12 @@ import { connect } from 'react-redux'
 import { IState, IReimbursementState } from '../../reducers';
 import Reimbursement from '../../models/reimbursement.model';
 import { Table } from 'reactstrap';
+import PaginationComponent from '../pagination/pagination.component';
 
 interface IReimbursementTableState {
-    data: Reimbursement[],
-    expandedRows: any[]
+    expandedRows: any[],
+    page: number,
+    view: number
 }
 
 interface IReimbursementTableProps {
@@ -18,126 +20,9 @@ export class ReimbursementsTableComponent extends Component<IReimbursementTableP
         super(props);
 
         this.state = {
-            data: [
-                {
-                    reimbursementId: 1,
-                    author: {
-                        userId: 1,
-                        username: 'cbprosser',
-                        password: '',
-                        firstName: 'chris',
-                        lastName: 'prosser',
-                        email: 'cbprosser@gmail.com',
-                        role: {
-                            roleId: 1,
-                            role: 'Administrator'
-                        }
-                    },
-                    dateSubmitted: 6 / 24 / 19,
-                    amount: 60,
-                    description: 'Test Description',
-                    dateResolved: 0,
-                    resolver: {
-                        userId: 2,
-                        username: 'nottthebrave',
-                        password: '',
-                        firstName: 'nott',
-                        lastName: 'the brave',
-                        email: 'nott.the.brave@gmail.com',
-                        role: {
-                            roleId: 2,
-                            role: 'Finance Manager'
-                        }
-                    },
-                    status: {
-                        statusId: 1,
-                        status: 'Pending'
-                    },
-                    type: {
-                        typeId: 1,
-                        type: 'Lodging'
-                    }
-                },
-                {
-                    reimbursementId: 2,
-                    author: {
-                        userId: 1,
-                        username: 'cbprosser',
-                        password: '',
-                        firstName: 'chris',
-                        lastName: 'prosser',
-                        email: 'cbprosser@gmail.com',
-                        role: {
-                            roleId: 1,
-                            role: 'Administrator'
-                        }
-                    },
-                    dateSubmitted: 6 - 24 - 2019,
-                    amount: 60,
-                    description: 'Test Description',
-                    dateResolved: 0,
-                    resolver: {
-                        userId: 2,
-                        username: 'nottthebrave',
-                        password: '',
-                        firstName: 'nott',
-                        lastName: 'the brave',
-                        email: 'nott.the.brave@gmail.com',
-                        role: {
-                            roleId: 2,
-                            role: 'Finance Manager'
-                        }
-                    },
-                    status: {
-                        statusId: 1,
-                        status: 'Pending'
-                    },
-                    type: {
-                        typeId: 1,
-                        type: 'Lodging'
-                    }
-                },
-                {
-                    reimbursementId: 3,
-                    author: {
-                        userId: 1,
-                        username: 'cbprosser',
-                        password: '',
-                        firstName: 'chris',
-                        lastName: 'prosser',
-                        email: 'cbprosser@gmail.com',
-                        role: {
-                            roleId: 1,
-                            role: 'Administrator'
-                        }
-                    },
-                    dateSubmitted: 6 - 24 - 2019,
-                    amount: 60,
-                    description: 'Test Description',
-                    dateResolved: 0,
-                    resolver: {
-                        userId: 2,
-                        username: 'nottthebrave',
-                        password: '',
-                        firstName: 'nott',
-                        lastName: 'the brave',
-                        email: 'nott.the.brave@gmail.com',
-                        role: {
-                            roleId: 2,
-                            role: 'Finance Manager'
-                        }
-                    },
-                    status: {
-                        statusId: 1,
-                        status: 'Pending'
-                    },
-                    type: {
-                        typeId: 1,
-                        type: 'Lodging'
-                    }
-                },
-            ],
-            expandedRows: [] // used to hold the currently expanded rows for rendering
+            expandedRows: [], // used to hold the currently expanded rows for rendering
+            page: 1,
+            view: 1
         }
     }
 
@@ -146,16 +31,16 @@ export class ReimbursementsTableComponent extends Component<IReimbursementTableP
         const isRowExpanded = currentExpandedRows.includes(rid); // Is it already expanded?
         const newExpandedRows = (isRowExpanded) ? currentExpandedRows.filter(id => id !== rid) : currentExpandedRows.concat(rid); // if it is, filter it out, if it isn't, add it in.
         this.setState({
-            expandedRows : newExpandedRows
+            expandedRows: newExpandedRows
         })
     }
 
     createRow = (rid: number) => {
         const data = this.props.reimbursements.reimbursements;
-        if(!data) {
+        if (!data) {
             return;
         }
-        const rowClickCallback = () => {this.rowClick(data![rid].reimbursementId)}; // Moved out of line due to needing to pass in event variables
+        const rowClickCallback = () => { this.rowClick(data![rid].reimbursementId) }; // Moved out of line due to needing to pass in event variables
         let row = [
             (
                 <tr onClick={rowClickCallback} key={`parentRow${data![rid].reimbursementId}`}>
@@ -178,18 +63,22 @@ export class ReimbursementsTableComponent extends Component<IReimbursementTableP
         return row;
     }
 
-    createAllRows = () => {
-        let allRows: any[] = [];
-
-        for (let i = 0; i < this.state.data.length - 1; i++) {
-            allRows.push(this.createRow(i));
-        }
-
-        return allRows;
+    selectPage = (newPage: number) => {
+        this.setState({
+            page: newPage
+        })
     }
 
     render() {
+        let allRows: any[] = [];
+
+        const length: number = (this.props.reimbursements.reimbursements) ? this.props.reimbursements.reimbursements.length : 0;
+
+        for (let i = 0; i < length; i++) {
+            allRows.push(this.createRow(i));
+        }
         
+        const allDataLength: number = (this.props.reimbursements.length) ? this.props.reimbursements.length : 0;
 
         return (
             <Table className="text-light bg-light" size="sm" hover striped responsive>
@@ -203,7 +92,14 @@ export class ReimbursementsTableComponent extends Component<IReimbursementTableP
                     </tr>
                 </thead>
                 <tbody>
-                    {this.createAllRows()}
+                    {allRows}
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colSpan={5}>
+                            <PaginationComponent length={allDataLength} page={this.state.page} view={this.state.view} selectPage={this.selectPage}/>
+                        </td>
+                    </tr>
                 </tbody>
             </Table>
         );
@@ -217,7 +113,7 @@ const mapStateToProps = (state: IState) => ({
 
 
 const mapDispatchToProps = {
-    
+
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReimbursementsTableComponent)

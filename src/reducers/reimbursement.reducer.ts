@@ -10,19 +10,19 @@ export default (state = initialState, action: any) => {
     case reimbursementTypes.FIND_ALL_BY_STATUS:
         return {
             ...state,
-            reimbursements: action.payload
+            ...action.payload
         }
     
     case reimbursementTypes.FIND_ALL_BY_ID:
         return {
             ...state,
-            reimbursements: action.payload
+            ...action.payload
         }
     
     case reimbursementTypes.FAILED_TO_FIND:
         return {
             ...state,
-            errorMessage: action.payload
+            ...action.payload
         }
 
     default:

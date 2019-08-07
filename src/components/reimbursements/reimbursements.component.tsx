@@ -55,6 +55,19 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
         })
     }
 
+    componentDidUpdate(prevProps: any, prevState: any) {
+        if (prevState.searchBy !== this.state.searchBy) {
+            switch (this.state.searchBy) {
+                case 'Status':
+                    this.getReimbursementsByStatus(this.state.status, this.state.view, this.state.page);
+                    break;
+                case 'User ID':
+                    this.getReimbursementsByID(this.state.id, this.state.view, this.state.page)
+                    break;
+            }
+        }
+    }
+
     render() {
         return (
             <Container fluid>
@@ -79,8 +92,6 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
                                         {(() => {
                                             switch (this.state.searchBy) {
                                                 case 'Status':
-                                                    this.getReimbursementsByStatus(this.state.status, this.state.view, this.state.page)
-                                                    console.log(this.props.reimbursements)
                                                     return (
                                                         <>
                                                             <Button>Status</Button>
@@ -88,7 +99,6 @@ export class ReimbursementsComponent extends Component<IReimbursementProps, IRei
                                                         </>
                                                     );
                                                 case 'User ID':
-                                                    this.getReimbursementsByID(this.state.id, this.state.view, this.state.page)
                                                     return (
                                                         <>
                                                             <Input className="bg-dark text-light" type="number" />

@@ -16,11 +16,17 @@ export const byStatus = (status: string, view: number, page: number) => async (d
                 authorization: 'Bearer ' + token
             }
         });
-        const reimbursements = resp.data;
+
+        const length = resp.data[resp.data.length - 1]
+
+        const reimbursements = resp.data.splice(0, resp.data.length - 1);
 
         dispatch({
             type: reimbursementTypes.FIND_ALL_BY_STATUS,
-            payload: reimbursements
+            payload: { 
+                reimbursements,
+                length
+            }
         })
         
     } catch (err) {
@@ -40,11 +46,17 @@ export const byId = (id: number, view: number, page: number) => async (dispatch:
                 authorization: 'Bearer ' + token
             }
         });
-        const reimbursements = resp.data;
+
+        const length = resp.data[resp.data.length - 1]
+
+        const reimbursements = resp.data.splice(0, resp.data.length - 1);
 
         dispatch({
             type: reimbursementTypes.FIND_ALL_BY_ID,
-            payload: reimbursements
+            payload: { 
+                reimbursements,
+                length
+            }
         })
         
     } catch (err) {

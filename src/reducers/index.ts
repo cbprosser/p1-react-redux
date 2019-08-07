@@ -12,6 +12,7 @@ export interface IAuthState {
 
 export interface IReimbursementState {
     reimbursements?: Reimbursement[],
+    length?: number,
     errorMessage?: string
 }
 
